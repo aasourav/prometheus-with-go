@@ -53,7 +53,7 @@ func getStorageUsage(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCpuUsage(w http.ResponseWriter, r *http.Request) {
-	cpuUsagePercentageQuery := `avg(sum by (instance, cpu) (rate(node_cpu_seconds_total{mode!~"idle|iowait|steal"}[5m])))`
+	cpuUsagePercentageQuery := `avg(sum by (cpu) (rate(node_cpu_seconds_total{mode!~"idle|iowait|steal"}[1m])))`
 	cpuUsagePercentage := queryFunction(r, w, cpuUsagePercentageQuery)
 
 	jsonResponse := map[string]float64{"cpuUsage": float64(cpuUsagePercentage.(model.Vector)[0].Value)}

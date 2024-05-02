@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: your-container
-        image: aasourav/prometheus:1.15
+        image: aasourav/prometheus:1.16
         ports:
         - containerPort: 8010
