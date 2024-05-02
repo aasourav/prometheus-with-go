@@ -1,0 +1,29 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+)
+
+func main() {
+	var (
+		promPort = flag.Int("prom.port", 9090, "prot to expose")
+	)
+	flag.Parse()
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(collectors.NewGoCollector())
+
+	mux := http.NewServeMux()
+	promHandler := promhttp.HandlerFor(reg, promhttp.HandlerOpts{})
+	mux.Handle("/metrics", promHandler)
+
+	port := fmt.Sprintf(":%d", *promPort)
+	log.Printf("start expor %q/metrics", port)
+
+}

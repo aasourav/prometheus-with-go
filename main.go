@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -20,7 +19,7 @@ func main() {
 }
 
 func queryFunction(r *http.Request, w http.ResponseWriter, query string) model.Value {
-	prometheusURL := "http://localhost:9090"
+	prometheusURL := "http://aescontroller-monitoring-o-prometheus.aescloud-engine.svc.cluster.local:9090"
 	client, err := api.NewClient(api.Config{
 		Address: prometheusURL,
 	})
@@ -31,9 +30,6 @@ func queryFunction(r *http.Request, w http.ResponseWriter, query string) model.V
 
 	prometheusAPI := v1.NewAPI(client)
 	result, _, _ := prometheusAPI.Query(r.Context(), query, time.Now())
-	fmt.Println(result)
-	fmt.Println()
-	fmt.Println()
 	return result
 }
 

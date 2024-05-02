@@ -1,0 +1,39 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+)
+
+func main() {
+	kubeconfig := flag.String("kubeconfig", "/home/aes-sourav/.kube/config", "location to your kubeconfig file")
+	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	if err != nil {
+		fmt.Println("[SYS]: Trying to Get Config from InCluster config..")
+		config, err = rest.InClusterConfig()
+		if err != nil {
+			fmt.Println("[ERROR]: Getting in-cluster configuration...")
+		}
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	service, err := clientset.CoreV1().Services("aescloud-engine").Get(context.TODO(), "aescontroller-monitoring-o-prometheus", metav1.GetOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// Assuming the Prometheus service is of type LoadBalancer or NodePort
+	// and has an external IP or a node port
+	fmt.Printf("http://%v:%v", service.Spec.ClusterIP, service.Spec.Ports[0].Port)
+
+	
+}
